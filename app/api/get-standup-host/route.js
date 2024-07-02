@@ -1,17 +1,32 @@
-import { promises as fs } from "fs";
-
 export async function GET() {
-  const file = await fs.readFile(process.cwd() + "/app/data.json", "utf8");
-  let data = JSON.parse(file);
+  const response = await fetch("https://general-db.vercel.app/api/get", {
+    cache: "no-cache",
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      db: "1",
+    }),
+  });
 
-  const currentPerson = data.host_for_this_week[0];
+  let result = await response.json();
 
-  data.host_for_this_week.push(data.host_for_this_week.shift());
+  const host = result.people[0];
 
-  await fs.writeFile(
-    process.cwd() + "/app/data.json",
-    JSON.stringify(data, null, 4)
-  );
+  result.people.push(result.people.shift());
 
-  return Response.json({ host_for_this_week: currentPerson }, { status: 200 });
+  await fetch("https://general-db.vercel.app/api/update", {
+    cache: "no-cache",
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      db: "1",
+      data: { people: result.people },
+    }),
+  });
+
+  return Response.json({ host_for_this_week: host }, { status: 200 });
 }
