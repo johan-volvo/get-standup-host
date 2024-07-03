@@ -1,4 +1,4 @@
-export async function GET() {
+export async function POST() {
   const response = await fetch("https://general-db.vercel.app/api/get", {
     cache: "no-cache",
     method: "POST",
