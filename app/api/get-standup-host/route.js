@@ -28,5 +28,11 @@ export async function POST() {
     }),
   });
 
-  return Response.json({ host_for_this_week: host }, { status: 200 });
+  return Response.json(
+    {
+      response_type: "in_channel",
+      text: `And the host for next week is... ${host}!`,
+    },
+    { status: 200 }
+  );
 }
